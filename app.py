@@ -6,12 +6,15 @@ from flask_jwt_extended import (
     set_refresh_cookies, unset_jwt_cookies
 )
 from flask_bcrypt import Bcrypt
+from cerberus import Validator
 
 from database.database_factory import DatabaseFactory
 from helper.user_helper import check_password
 from services.user_service import UserService
-
+from services.wallet_service import WalletService
 from os import environ
+from helper.enums import Transaction_Type
+from validation_schema.user_topup_validation import user_topup_validation_schema
 
 
 
@@ -31,7 +34,7 @@ def home():
 def authentication():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
-    user = UserService(engine).get_user(email)
+    user = UserService(engine).get_user_by_email(email)
     if user:
         check = check_password(user.get('password'), password)
         if check:
@@ -48,11 +51,9 @@ def authentication():
 @app.route('/token/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
-    # Create the new access token
     current_user = get_jwt_identity()
     access_token = create_access_token(identity=current_user)
 
-    # Set the JWT access cookie in the response
     resp = jsonify({'msg': 'token refreshed'})
     set_access_cookies(resp, access_token)
     return resp, 200
@@ -63,6 +64,28 @@ def logout():
     resp = jsonify({'msg': 'logout success.'})
     unset_jwt_cookies(resp)
     return resp, 200
+
+@app.route('/api/topup', methods=['POST'])
+@jwt_required
+def topup():
+    user_id = get_jwt_identity()
+    user = UserService(engine).get_user_by_id(user_id)
+
+    data = {
+        'amount': request.json.get('amount', None),
+        'user_agent': request.headers.get('User-Agent'),
+        'ip': request.headers.get('ip-address'),
+        'location': request.headers.get('location'),
+        'type': Transaction_Type.DEBIT,
+        'author': user.get('username'),
+        'user_id': user_id
+    }
+    v = Validator(user_topup_validation_schema)
+    if v.validate(data):
+        WalletService(engine).topup(data)
+        return {"msg": "transaction success."}, 200
+    return {"msg": "validation error, transaction failed.", "data": data}
+
 
 if __name__ == '__main__':
     app.run()
