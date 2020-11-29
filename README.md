@@ -11,7 +11,226 @@
 8. Set variable CONFIG_SETTING to config.Devconfig . Run command on terminal `export CONFIG_SETTING=config.DevConfig`, if you are using Windows use command `set CONFIG_SETTING=config.DevConfig`
 9. To run application, use command `flask run`.
 
-## Endpoints
-Attempt | #1 | #2 | #3 | #4 | #5 | #6 | #7 | #8 | #9 | #10 | #11
---- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
-Seconds | 301 | 283 | 290 | 286 | 289 | 285 | 287 | 287 | 272 | 276 | 269
+## Endpoint
+### Login
+Used for authenticating registered user, get access token stored in cookie with httponly set to true.
+
+**URL** : `/token/auth`
+
+**Method** : `POST`
+
+**Auth required** : NO
+
+**Request Body**
+
+```json
+{
+    "email": "[valid email address]",
+    "password": "[password in plain text]"
+}
+```
+
+**Request Header**
+use default request header
+
+### Success Response
+set access_token_cookie,csrf_access_token,refresh_token_cookie,csrf_refresh_token in header response
+
+**Code** : `200 OK`
+
+**Response body**
+
+```json
+{
+    "msg": "login success."
+}
+```
+
+### Error Response
+
+**Condition** : If 'email' and 'password' combination is wrong.
+
+**Code** : `400 BAD REQUEST`
+
+**Content** :
+
+```json
+{
+    "msg": "login failed."
+}
+```
+
+### Refresh token
+Used for refresh access token
+
+**URL** : `/token/refresh`
+
+**Method** : `POST`
+
+**Auth required** : NO
+
+**Request Body**
+None
+
+**Request Header**
+```json
+{
+    "X-CSRF-TOKEN": "[csrf_refresh_token]",
+    "refresh_token_cookie": "[refresh_token_cookie]"
+}
+```
+
+### Success Response
+
+**Code** : `200 OK`
+
+**Response body**
+
+```json
+{
+    "msg": "token refreshed."
+}
+```
+
+### Error Response
+
+**Condition** : If request header invalid.
+
+**Code** : `401 UNAUTHORIZED`
+
+**Content** :
+
+```json
+{
+    "msg": "whether csrf token refresh or refresh token invalid"
+}
+```
+
+### remove token or logout
+Used for remove access token
+
+**URL** : `/token/remove`
+
+**Method** : `POST`
+
+**Auth required** : NO
+
+**Request Body**
+None
+
+**Request Header**
+None
+### Success Response
+
+**Code** : `200 OK`
+
+**Response body**
+
+```json
+{
+    "msg": "logout success."
+}
+```
+
+### Topup
+Used for topup
+
+**URL** : `/api/topup`
+
+**Method** : `POST`
+
+**Auth required** : YES
+
+**Request Body**
+```json
+{
+    "amount": "[amount]",
+}
+```
+
+
+**Request Header**
+```json
+{
+    "X-CSRF-TOKEN": "[csrf_access_token]",
+    "location": "[client location]",
+    "ip-address": "[ip-address client]"
+}
+```
+
+### Success Response
+
+**Code** : `200 OK`
+
+**Response body**
+
+```json
+{
+    "msg": "transaction success."
+}
+```
+
+### Error Response
+
+**Condition** : If request send is invalid.
+
+
+**Content** :
+
+```json
+{
+    "msg": "transaction failed."
+}
+```
+
+### Topup
+Used for topup
+
+**URL** : `/api/transfer`
+
+**Method** : `POST`
+
+**Auth required** : YES
+
+**Request Body**
+```json
+{
+    "amount": "[amount]",
+    "code": "[code]"
+}
+```
+
+
+**Request Header**
+```json
+{
+    "X-CSRF-TOKEN": "[csrf_access_token]",
+    "location": "[client location]",
+    "ip-address": "[ip-address client]"
+}
+```
+
+### Success Response
+
+**Code** : `200 OK`
+
+**Response body**
+
+```json
+{
+    "msg": "transaction success."
+}
+```
+
+### Error Response
+
+**Condition** : If request send is invalid.
+
+
+**Content** :
+
+```json
+{
+    "msg": "transaction failed."
+}
+```
