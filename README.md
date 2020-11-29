@@ -10,3 +10,8 @@
 7. Set variable FLASK_ENV to development. Run command on terminal `export FLASK_ENV=development`, if you are using Windows use command `set FLASK_ENV=development`
 8. Set variable CONFIG_SETTING to config.Devconfig . Run command on terminal `export CONFIG_SETTING=config.DevConfig`, if you are using Windows use command `set CONFIG_SETTING=config.DevConfig`
 9. To run application, use command `flask run`.
+
+## Endpoints
+Attempt | #1 | #2 | #3 | #4 | #5 | #6 | #7 | #8 | #9 | #10 | #11
+--- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
+Seconds | 301 | 283 | 290 | 286 | 289 | 285 | 287 | 287 | 272 | 276 | 269
