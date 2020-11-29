@@ -12,7 +12,7 @@
 9. To run application, use command `flask run`.
 
 ## Endpoint
-### Login
+### 1. Login
 Used for authenticating registered user, get access token stored in cookie with httponly set to true.
 
 **URL** : `/token/auth`
@@ -33,7 +33,7 @@ Used for authenticating registered user, get access token stored in cookie with 
 **Request Header**
 use default request header
 
-### Success Response
+#### Success Response
 set access_token_cookie,csrf_access_token,refresh_token_cookie,csrf_refresh_token in header response
 
 **Code** : `200 OK`
@@ -46,7 +46,7 @@ set access_token_cookie,csrf_access_token,refresh_token_cookie,csrf_refresh_toke
 }
 ```
 
-### Error Response
+#### Error Response
 
 **Condition** : If 'email' and 'password' combination is wrong.
 
@@ -60,7 +60,7 @@ set access_token_cookie,csrf_access_token,refresh_token_cookie,csrf_refresh_toke
 }
 ```
 
-### Refresh token
+### 2. Refresh token
 Used for refresh access token
 
 **URL** : `/token/refresh`
@@ -80,7 +80,7 @@ None
 }
 ```
 
-### Success Response
+#### Success Response
 
 **Code** : `200 OK`
 
@@ -92,7 +92,7 @@ None
 }
 ```
 
-### Error Response
+#### Error Response
 
 **Condition** : If request header invalid.
 
@@ -106,7 +106,7 @@ None
 }
 ```
 
-### remove token or logout
+### 3. remove token or logout
 Used for remove access token
 
 **URL** : `/token/remove`
@@ -132,7 +132,7 @@ None
 }
 ```
 
-### Topup
+### 4. Topup
 Used for topup
 
 **URL** : `/api/topup`
@@ -173,7 +173,7 @@ Used for topup
 ### Error Response
 
 **Condition** : If request send is invalid.
-
+**Code** : `400 BAD REQUEST`
 
 **Content** :
 
@@ -183,8 +183,8 @@ Used for topup
 }
 ```
 
-### Topup
-Used for topup
+### 4. Transfer
+Used for transfer
 
 **URL** : `/api/transfer`
 
@@ -225,7 +225,7 @@ Used for topup
 ### Error Response
 
 **Condition** : If request send is invalid.
-
+**Code** : `400 BAD REQUEST`
 
 **Content** :
 
