@@ -15,6 +15,7 @@ from services.wallet_service import WalletService
 from os import environ
 from helper.enums import Transaction_Type
 from validation_schema.user_topup_validation import user_topup_validation_schema
+from validation_schema.bank_transfer_validation import bank_transfer_validation_schema
 
 
 
@@ -65,6 +66,7 @@ def logout():
     unset_jwt_cookies(resp)
     return resp, 200
 
+################# TOPUP ######################
 @app.route('/api/topup', methods=['POST'])
 @jwt_required
 def topup():
@@ -82,10 +84,35 @@ def topup():
     }
     v = Validator(user_topup_validation_schema)
     if v.validate(data):
-        WalletService(engine).topup(data)
+        WalletService(engine, data).topup()
         return {"msg": "transaction success."}, 200
-    return {"msg": "validation error, transaction failed.", "data": data}
+    return {"msg": "validation error, transaction failed.", "errors": v.errors}
 
+################# TRANSFER ######################
+@app.route('/api/transfer', methods=['POST'])
+@jwt_required
+def transfer():
+    user_id = get_jwt_identity()
+    user = UserService(engine).get_user_by_id(user_id)
+
+    data = {
+        'amount': request.json.get('amount', None),
+        'code': request.json.get('code', None),
+        'user_agent': request.headers.get('User-Agent'),
+        'ip': request.headers.get('ip-address'),
+        'location': request.headers.get('location'),
+        'author': user.get('username'),
+        'user_id': user_id
+    }
+    v = Validator(bank_transfer_validation_schema)
+    if v.validate(data):
+        wallet_service = WalletService(engine, data)
+        if wallet_service.check_balance():
+            wallet_service.transfer()
+            return {"msg": "transaction success."}, 200
+        else:
+            return {"msg": "user balance is not sufficient, transaction failed."}
+    return {"msg": "validation error, transaction failed.", "errors": v.errors }
 
 if __name__ == '__main__':
     app.run()

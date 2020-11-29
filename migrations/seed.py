@@ -12,3 +12,4 @@ with engine.connect() as conn:
         VALUES (:username, :email, :password)
         """
     ), username='aditya', email='aditya@ewallet.com', password=generate_password_hash('password').decode('utf-8'))
+    print("success..")
