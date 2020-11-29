@@ -86,7 +86,7 @@ def topup():
     if v.validate(data):
         WalletService(engine, data).topup()
         return {"msg": "transaction success."}, 200
-    return {"msg": "validation error, transaction failed.", "errors": v.errors}
+    return {"msg": "validation error, transaction failed.", "errors": v.errors}, 400
 
 ################# TRANSFER ######################
 @app.route('/api/transfer', methods=['POST'])
@@ -111,8 +111,8 @@ def transfer():
             wallet_service.transfer()
             return {"msg": "transaction success."}, 200
         else:
-            return {"msg": "user balance is not sufficient, transaction failed."}
-    return {"msg": "validation error, transaction failed.", "errors": v.errors }
+            return {"msg": "user balance is not sufficient, transaction failed."}, 400
+    return {"msg": "validation error, transaction failed.", "errors": v.errors }, 400
 
 if __name__ == '__main__':
     app.run()
