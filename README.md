@@ -1,4 +1,5 @@
 # ewallet
+This web api is using framework Flask from python and database using MySQL
 
 ## Installation instructions
 1. Make sure you have python > 3.7 Installed on your machine. [Download Python](https://www.python.org/downloads/).
