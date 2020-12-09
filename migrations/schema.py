@@ -80,19 +80,16 @@ with engine.connect() as conn:
     ))
     conn.execute(text(
         """
-        CREATE TABLE `bank_balance_history` (
+        CREATE TABLE `bank_balance` (
             `id` INT(11) NOT NULL AUTO_INCREMENT,
-            `bank_balance_id` INT(11) NOT NULL,
-            `balance_before` INT(11) NOT NULL,
-            `balance_after` INT(11) NOT NULL,
-            `activity` VARCHAR(50) NOT NULL,
-            `type` ENUM('debit','kredit') NOT NULL,
-            `ip` VARCHAR(50) NOT NULL,
-            `location` VARCHAR(50) NOT NULL,
-            `user_agent` VARCHAR(50) NOT NULL,
-            `author` VARCHAR(50) NOT NULL,
+            `balance` INT(11) NOT NULL,
+            `balance_achieve` INT(11) NOT NULL,
+            `code` VARCHAR(10) NOT NULL,
+            `user_id` INT(11) NOT NULL DEFAULT '0',
+            `enable` BIT(1) NOT NULL,
+            `last_transaction_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
-            INDEX `balance_bank_id` (`bank_balance_id`)
+            INDEX `code` (`code`, `user_id`)
         )
         COLLATE='latin1_swedish_ci'
         ENGINE=InnoDB

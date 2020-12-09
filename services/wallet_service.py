@@ -104,10 +104,10 @@ class WalletService:
         try:
             q_bank_balance = text(
                 """
-                    select id, balance from bank_balance where code = :code limit 1
+                    select id, balance from bank_balance where code = :code and user_id = :user_id limit 1
                 """
             )
-            bank_balance = conn.execute(q_bank_balance, code=data['code']).fetchone()
+            bank_balance = conn.execute(q_bank_balance, code=data['code'], user_id=data['user_id']).fetchone()
             bank_balance_id, bank_balance_before = 0, 0
             if bank_balance:
                 bank_balance_id, bank_balance_before = bank_balance
@@ -127,13 +127,14 @@ class WalletService:
                 insert_bank_balance = text(
                     """
                         insert into bank_balance 
-                            (balance, balance_achieve, code, enable)
+                            (balance, user_id, balance_achieve, code, enable)
                         values
-                            (:balance, :balance_achieve, :code, :enable)
+                            (:balance, :user_id, :balance_achieve, :code, :enable)
                     """
                 )
                 conn.execute(insert_bank_balance, 
                     balance=data['amount'],
+                    user_id=data['user_id'],
                     balance_achieve=data['amount'],
                     code=data['code'],
                     enable=True
