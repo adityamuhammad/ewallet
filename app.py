@@ -1,3 +1,4 @@
+from os import environ
 from flask import Flask, jsonify, request
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
@@ -8,11 +9,9 @@ from flask_jwt_extended import (
 from flask_bcrypt import Bcrypt
 from cerberus import Validator
 
-from database.database_factory import DatabaseFactory
 from helper.user_helper import check_password
 from services.user_service import UserService
 from services.wallet_service import WalletService
-from os import environ
 from helper.enums import Transaction_Type
 from validation_schema.user_topup_validation import user_topup_validation_schema
 from validation_schema.bank_transfer_validation import bank_transfer_validation_schema
@@ -21,7 +20,6 @@ from validation_schema.bank_transfer_validation import bank_transfer_validation_
 
 app = Flask(__name__)
 app.config.from_object(environ.get('CONFIG_SETTING'))
-engine = DatabaseFactory.get()
 
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
@@ -35,7 +33,7 @@ def home():
 def authentication():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
-    user = UserService(engine).get_user_by_email(email)
+    user = UserService().get_user_by_email(email)
     if user:
         check = check_password(user.get('password'), password)
         if check:
@@ -71,7 +69,7 @@ def logout():
 @jwt_required
 def topup():
     user_id = get_jwt_identity()
-    user = UserService(engine).get_user_by_id(user_id)
+    user = UserService().get_user_by_id(user_id)
 
     data = {
         'amount': request.json.get('amount', None),
@@ -84,7 +82,7 @@ def topup():
     }
     v = Validator(user_topup_validation_schema)
     if v.validate(data):
-        WalletService(engine, data).topup()
+        WalletService(data).topup()
         return {"msg": "transaction success."}, 200
     return {"msg": "validation error, transaction failed.", "errors": v.errors}, 400
 
@@ -93,7 +91,7 @@ def topup():
 @jwt_required
 def transfer():
     user_id = get_jwt_identity()
-    user = UserService(engine).get_user_by_id(user_id)
+    user = UserService().get_user_by_id(user_id)
 
     data = {
         'amount': request.json.get('amount', None),
@@ -106,7 +104,7 @@ def transfer():
     }
     v = Validator(bank_transfer_validation_schema)
     if v.validate(data):
-        wallet_service = WalletService(engine, data)
+        wallet_service = WalletService(data)
         if wallet_service.check_balance():
             wallet_service.transfer()
             return {"msg": "transaction success."}, 200

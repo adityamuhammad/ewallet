@@ -1,7 +1,8 @@
 from sqlalchemy import text
+from database.database_factory import DatabaseFactory
 class WalletService:
-    def __init__(self, engine, data):
-        self.engine = engine
+    def __init__(self, data):
+        self.engine = DatabaseFactory.get()
         self.data = data
     
     def topup(self):
